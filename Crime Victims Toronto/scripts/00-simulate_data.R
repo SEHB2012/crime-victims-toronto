@@ -2,7 +2,7 @@
 # Purpose: Simulates a dataset regarding crimes in Toronto ... [...UPDATE THIS...]
 # Author: Sehar Bajwa
 # Date: 23 January 2023 
-# Contact: sehar@mail.utoronto.ca
+# Contact: sehar.bajwa@mail.utoronto.ca
 
 
 #### Workspace setup ####
