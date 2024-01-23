@@ -6,10 +6,6 @@
 
 
 #### Workspace setup ####
-install.packages("tidyverse")
-install.packages("janitor")
-install.packages("opendatatoronto")
-install.packages("knitr")
 
 library(knitr)
 library(janitor)
