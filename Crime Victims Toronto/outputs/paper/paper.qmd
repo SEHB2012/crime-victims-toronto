@@ -25,6 +25,7 @@ library(dplyr)
 library(tidyr)
 library(knitr)
 library(kableExtra)
+library("readr")
 
 ```
 
@@ -53,25 +54,7 @@ Selecting relevant categories, these being report_year,subtype,sex, age_cohort,c
 Removing datapoints with unknown/missing data 
 Filtering to only female victims.
 
-
-```{r dataextract, echo=FALSE, message=FALSE}
-# create a table showing the first ten rows of the cleaned data
-clean_crimesdata <- read_csv(here::here("Crime Victims Toronto/inputs/data/final_crimedata_toronto.csv"))
-  col_types = cols(.default = "c")
-
-clean_crimesdata %>%
-  slice(1:10) %>%
-  kable(
-    caption = "Extracting the first ten rows from the Crime victims data",
-col.names=c("Year", "Type of Crime", "Age cohort", "Count"),
-linesep = "", digits = 1, booktabs=T) %>%
-  kable_styling(latex_options = "HOLD_position", font_size = 10)
-tail(clean_crimesdata)
-```
-
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
+Below are the first ten rows of the cleaned dataset, generated using the package kable.
 
 ```{r}
 #| label: fig-planes
@@ -80,21 +63,23 @@ And also planes (@fig-planes). (You can change the height and width, but don't w
 #| warning: false
 #| message: false
 
-#analysis_data <- read_csv(here::here("outputs/data/analysis_data.csv"))
+analysis_data <- 
+  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbyage.csv",
+           show_col_types = FALSE)
+head(analysis_data)
 
 ```
 
-Talk way more about it. 
-
-
-
 # Visualisation
 
-The goal of our modelling strategy is twofold. Firstly,...
+```{r, echo=FALSE, message=FALSE}
+```
+```{r}
+```
 
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
 
 ## Changing crime trends in Toronto over the years 
+
 ### 
 ### Discussion
 
