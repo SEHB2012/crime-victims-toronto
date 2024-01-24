@@ -1,44 +1,75 @@
 #### Preamble ####
-# Purpose: Cleans the raw plane data recorded by two observers..... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 6 April 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
-# License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
+# Purpose: Cleans up the dataset for use
+# Author: Sehar Bajwa 
+# Date: 23 January 2023 
+# Contact: sehar.bajwa@mail.utoronto.ca
 
 #### Workspace setup ####
 library(tidyverse)
+library(knitr)
+library(janitor)
+library(lubridate)
+library(opendatatoronto)
+library(tidyverse)
 
-#### Clean data ####
-raw_data <- read_csv("inputs/data/plane_data.csv")
+#Basic cleaning and selecting relevant columns
+read_csv(
+  file = "raw_crimedata_toronto.csv",
+  show_col_types = FALSE
+)
 
-cleaned_data <-
-  raw_data |>
-  janitor::clean_names() |>
-  select(wing_width_mm, wing_length_mm, flying_time_sec_first_timer) |>
-  filter(wing_width_mm != "caw") |>
-  mutate(
-    flying_time_sec_first_timer = if_else(flying_time_sec_first_timer == "1,35",
-                                   "1.35",
-                                   flying_time_sec_first_timer)
-  ) |>
-  mutate(wing_width_mm = if_else(wing_width_mm == "490",
-                                 "49",
-                                 wing_width_mm)) |>
-  mutate(wing_width_mm = if_else(wing_width_mm == "6",
-                                 "60",
-                                 wing_width_mm)) |>
-  mutate(
-    wing_width_mm = as.numeric(wing_width_mm),
-    wing_length_mm = as.numeric(wing_length_mm),
-    flying_time_sec_first_timer = as.numeric(flying_time_sec_first_timer)
-  ) |>
-  rename(flying_time = flying_time_sec_first_timer,
-         width = wing_width_mm,
-         length = wing_length_mm
-         ) |> 
-  tidyr::drop_na()
+final_data <- clean_names(raw_crimedata_toronto)
+final_data <-
+  final_data |>
+  select(
+    report_year,
+    subtype,
+    sex,
+    age_cohort,
+    count
+  )
+head(final_data)
 
-#### Save data ####
-write_csv(cleaned_data, "outputs/data/analysis_data.csv")
+
+#removing all rows with unknown data points
+final_data <-
+  final_data |>
+  filter(!grepl("Unknown", age_cohort, ignore.case = TRUE))
+#only retaining Female data
+final_data <-
+  final_data |>
+  filter(
+    sex == "F",
+  )
+head(finale_data)
+
+#finale_data |>
+# summarise(n = n(),
+#            .by = sex)
+
+# Convert 'count' to numeric (assuming it's currently a character)
+final_data <- mutate(final_data, count = as.numeric(count))
+
+# Manipulating data for first section : crimes are grouped by the type of crime, and summed for each type per year
+# Group by report_year and crime type, then calculate the sum of counts
+#How have different crime type rates changed over the years?
+data_groupsbycrime <- final_data %>%
+  group_by(report_year, subtype) %>%
+  summarise(sum_count = sum(count))
+# Display the result
+print(data_groupsbycrime)
+
+# Manipulating data for first section : crimes are grouped by age, and summed for each crime type 
+# Group by report_year and age, then calculate the sum of counts
+#Which age groups have been most susceptible to crime over the years?
+data_groupsbyage <- final_data %>%
+  group_by(report_year, age_cohort) %>%
+  summarise(sum_count = sum(count))
+# Custom order vector since <12 was originally at the bottom
+custom_order <- c("<12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+")
+data_groupsbyage <- data_groupsbyage %>%
+  arrange(factor(age_cohort, levels = custom_order))
+# Display the result
+print(data_groupsbyage)
+
+
