@@ -3,7 +3,6 @@
 # Author: Sehar Bajwa 
 # Date: 23 January 2023 
 # Contact: sehar.bajwa@mail.utoronto.ca
-
 #### Workspace setup ####
 library(tidyverse)
 library(knitr)
@@ -30,7 +29,6 @@ final_data <-
   )
 head(final_data)
 
-
 #removing all rows with unknown data points
 final_data <-
   final_data |>
@@ -41,7 +39,6 @@ final_data <-
   filter(
     sex == "F",
   )
-head(finale_data)
 
 #finale_data |>
 # summarise(n = n(),
@@ -56,8 +53,6 @@ final_data <- mutate(final_data, count = as.numeric(count))
 data_groupsbycrime <- final_data %>%
   group_by(report_year, subtype) %>%
   summarise(sum_count = sum(count))
-# Display the result
-print(data_groupsbycrime)
 
 # Manipulating data for first section : crimes are grouped by age, and summed for each crime type 
 # Group by report_year and age, then calculate the sum of counts
@@ -69,7 +64,4 @@ data_groupsbyage <- final_data %>%
 custom_order <- c("<12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+")
 data_groupsbyage <- data_groupsbyage %>%
   arrange(factor(age_cohort, levels = custom_order))
-# Display the result
-print(data_groupsbyage)
-
 
