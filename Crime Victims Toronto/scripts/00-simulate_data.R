@@ -28,9 +28,6 @@ simulate_groupbycrime <- tibble(
   crime_count = sample(1000:9000, num_years * 4, replace = TRUE) * 1.0  # Convert to numeric
 )
 
-# Display the first few rows of the data
-print(simulate_groupbycrime)
-
 #testing for unique crime names 
 #the years should have lower bound 2014, upper bound 2022
 #the crime should be a number 
@@ -57,9 +54,6 @@ simulate_groupbyage <- tibble(
   crime_type = rep(c(">12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+"), times = num_years),
   crime_count = sample(1000:9000, num_years * 8, replace = TRUE) * 1.0  # Convert to numeric
 )
-
-# Display the first few rows of the data
-print(simulate_groupbyage)
 
 #testing for unique age groups,
 #the years should have lower bound 2014, upper bound 2022
