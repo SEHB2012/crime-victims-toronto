@@ -1,15 +1,15 @@
 ---
-title: "My title"
-subtitle: "My subtitle if needed"
+title: "Are some women more susceptible to crime than others in Toronto?"
+subtitle: "A visualisation of crime rates over the years, and the ages they affect most"
 author: 
-  - First author
-  - Another author
-thanks: "Code and data are available at: LINK."
+  - Sehar Bajwa
+thanks: "Code and data are available at: https://github.com/SEHB2012/crime-victims-toronto"
 date: today
 date-format: long
 abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
 format: pdf
 number-sections: true
+toc: true
 bibliography: references.bib
 ---
 
@@ -20,6 +20,12 @@ bibliography: references.bib
 
 library(tidyverse)
 library(palmerpenguins)
+library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+
 ```
 
 
@@ -32,21 +38,35 @@ The remainder of this paper is structured as follows. @sec-data....
 
 
 # Data {#sec-data}
+The first step is to construct a relevant dataset derived from the Police Annual Statistical report on crime victims. This section delves into the characteristics of note and outlines the process undertaken to create a ready-to-analyse dataset, including addressing missing values and standardizing variable names.
+## Data characteristics
+Published by the Toronto Police service on the Toronto Open Data Portal, the original dataset covers all crimes committed against the person, including those deemed unfounded post investigation. Updated annually, the entries are filtered by the reported year, and each year is associated with the following features : type of crime, age cohort of victim, gender, and counts of the same crime.
+Note that the dataset is not impervious to missing/incomplete data across several categories, and while any incomplete datapoint has been discounted, this causes serious implications for the analysis and is examined later.
+The original dataset features 1111 datapoints across 9 variables.
+ Age_cohort is a defining feature of this dataset, and refers to one of 8 age bins that are as follows: ">12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+". Accordingly, efforts were made to attribute recognisable labels to these cohorts, but there was admittedly difficulty distinguishing between the middle aged adults that arguable spanned three of the 9 age cohorts. Therefore, the original identifiers were retained.
+## Data cleanup and processing 
+R (R Core Team 2021) was the language and environment used for the bulk of this analysis, alongside the dplyr (Wickham et al. 2021),tidyverse (Wickham et al. 2019), janitor (Firke et al. 2021),  heatmap(cite). 
 
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
+I began with cleaning up the data after downloading it using the opendatatoronto package. Following are the steps involved in the primary cleanup stage: 
+Cleaning and standardising column names 
+Selecting relevant categories, these being report_year,subtype,sex, age_cohort,count
+Removing datapoints with unknown/missing data 
+Filtering to only female victims.
 
-```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
-#| echo: false
 
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
+```{r dataextract, echo=FALSE, message=FALSE}
+# create a table showing the first ten rows of the cleaned data
+clean_crimesdata <- read_csv(here::here("Crime Victims Toronto/inputs/data/final_crimedata_toronto.csv"))
+  col_types = cols(.default = "c")
+
+clean_crimesdata %>%
+  slice(1:10) %>%
+  kable(
+    caption = "Extracting the first ten rows from the Crime victims data",
+col.names=c("Year", "Type of Crime", "Age cohort", "Count"),
+linesep = "", digits = 1, booktabs=T) %>%
+  kable_styling(latex_options = "HOLD_position", font_size = 10)
+tail(clean_crimesdata)
 ```
 
 Talk more about it.
@@ -60,27 +80,23 @@ And also planes (@fig-planes). (You can change the height and width, but don't w
 #| warning: false
 #| message: false
 
-analysis_data <- read_csv(here::here("outputs/data/analysis_data.csv"))
+#analysis_data <- read_csv(here::here("outputs/data/analysis_data.csv"))
 
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
 ```
 
 Talk way more about it. 
 
 
 
-# Model
+# Visualisation
 
 The goal of our modelling strategy is twofold. Firstly,...
 
 Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
 
-## Model set-up
+## Changing crime trends in Toronto over the years 
+### 
+### Discussion
 
 Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
 
@@ -113,10 +129,7 @@ Our results are summarized in @tbl-modelresults.
 #| warning: false
 #| message: false
 
-library(rstanarm)
 
-first_model <-
-  readRDS(file = here::here("outputs/models/first_model.rds"))
 ```
 
 ```{r}
@@ -126,13 +139,6 @@ first_model <-
 #| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
 #| warning: false
 
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
 ```
 
 
@@ -179,15 +185,7 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 #| fig-cap: "Examining how the model fits, and is affected by, the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
 
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
 ```
 
 ## Diagnostics
@@ -206,9 +204,6 @@ posterior_vs_prior(first_model) +
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
 
-plot(first_model, "trace")
-
-plot(first_model, "rhat")
 ```
 
 
@@ -217,5 +212,3 @@ plot(first_model, "rhat")
 
 
 # References
-
-
