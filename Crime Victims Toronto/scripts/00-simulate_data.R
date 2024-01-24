@@ -1,6 +1,6 @@
 #### Preamble ####
-# Purpose: Simulates a dataset regarding crimes in Toronto ... [...UPDATE THIS...]
-# Author: Sehar Bajwa is the coolest
+# Purpose: Simulates a dataset regarding crimes in Toronto 
+# Author: Sehar Bajwa 
 # Date: 23 January 2023 
 # Contact: sehar.bajwa@mail.utoronto.ca
 
