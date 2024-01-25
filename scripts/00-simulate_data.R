@@ -28,17 +28,6 @@ simulate_groupbycrime <- tibble(
   sum_count = sample(1000:9000, num_years * 4, replace = TRUE) * 1.0  # Convert to numeric
 )
 
-#testing for unique crime names 
-#the years should have lower bound 2014, upper bound 2022
-#the crime should be a number 
-
-simulate_groupbycrime$crime_type |>
-  unique() == c("Assault", "Other", "Robbery", "Sexual Violation")
-
-simulate_groupbycrime$report_year |> min() == 2014
-simulate_groupbycrime$report_year |> max() == 2022
-simulate_groupbycrime$sum_count |> min() >= 0
-simulate_groupbycrime$sum_count |> class() == "numeric"
 
 # Generate simulated data for second section : crimes are grouped by the age group
 
@@ -54,18 +43,6 @@ simulate_groupbyage <- tibble(
   subtype = rep(c(">12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+"), times = num_years),
   sum_count = sample(1000:9000, num_years * 8, replace = TRUE) * 1.0  # Convert to numeric
 )
-
-#testing for unique age groups,
-#the years should have lower bound 2014, upper bound 2022
-#the crime should be a number
-
-simulate_groupbyage$crime_type |>
-  unique() == c(">12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+")
-
-simulate_groupbyage$report_year |> min() == 2014
-simulate_groupbyage$report_year |> max() == 2022
-simulate_groupbyage$sum_count |> min() >= 0
-simulate_groupbyage$sum_count |> class() == "numeric"
 
 
 

@@ -15,7 +15,7 @@ library(tidyverse)
 
 #Basic cleaning and selecting relevant columns
 read_csv(
-  file = "raw_crimedata_toronto.csv",
+  file = "/cloud/project/inputs/data/raw_crimedata_toronto.csv",
   show_col_types = FALSE
 )
 
@@ -72,14 +72,14 @@ data_groupsbyage <- data_groupsbyage %>%
   arrange(factor(age_cohort, levels = custom_order))
 write_csv(
   x = data_groupsbycrime,
-  file = "Crime Victims Toronto/inputs/data/data_groupsbycrime.csv"
+  file = "/cloud/project/outputs/data/data_groupsbycrime.csv"
 )
 write_csv(
     x = data_groupsbyage,
-    file = "Crime Victims Toronto/inputs/data/data_groupsbyage.csv"
+    file = "/cloud/project/outputs/data/data_groupsbyage.csv"
 )
 write_csv(
   x = finale_data,
-  file = "Crime Victims Toronto/inputs/data/final_crimedata_toronto.csv"
+  file = "/cloud/project/outputs/data/final_crimedata_toronto.csv"
 )
 

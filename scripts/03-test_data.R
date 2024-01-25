@@ -1,5 +1,5 @@
 #### Preamble ####
-# Purpose: Cleans up the dataset for use
+# Purpose: Testing the date by bounds and type
 # Author: Sehar Bajwa 
 # Date: 23 January 2023 
 # Contact: sehar.bajwa@mail.utoronto.ca

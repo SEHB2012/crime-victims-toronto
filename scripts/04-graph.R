@@ -1,5 +1,5 @@
 #### Preamble ####
-# Purpose: Cleans up the dataset for use
+# Purpose: Makes graphs (to refer back incase quarto does not render)
 # Author: Sehar Bajwa 
 # Date: 23 January 2023 
 # Contact: sehar.bajwa@mail.utoronto.ca
