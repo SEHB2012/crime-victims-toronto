@@ -3,7 +3,8 @@
 This paper analyses the rate of female crime victimization in the City of Toronto across several years, types of crime and age groups
 \## Overview
 
-LLM Usage: Segments of R code were written, debugged and improved with the assistance of Large Language Models, specifically ChatGPT 3.5. Chat history is included in 
+LLM Usage: Segments of R code were written, debugged and improved with the assistance of Large Language Models, specifically ChatGPT 3.5. Chat history is included in the following file:
+Crime Victims Toronto/outputs/paper/llm
 
 # File Structure
 
