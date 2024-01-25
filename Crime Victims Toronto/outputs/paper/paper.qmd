@@ -18,6 +18,8 @@ bibliography: references.bib
 #| warning: false
 #| message: false
 
+#install.packages("pheatmap")
+
 library(tidyverse)
 library(palmerpenguins)
 library(tidyverse)
@@ -26,6 +28,7 @@ library(tidyr)
 library(knitr)
 library(kableExtra)
 library("readr")
+library("pheatmap")
 
 ```
 
@@ -37,62 +40,102 @@ You can and should cross-reference sections and sub-sections.
 The remainder of this paper is structured as follows. @sec-data....
 
 
-
 # Data {#sec-data}
-The first step is to construct a relevant dataset derived from the Police Annual Statistical report on crime victims. This section delves into the characteristics of note and outlines the process undertaken to create a ready-to-analyse dataset, including addressing missing values and standardizing variable names.
-## Data characteristics
-Published by the Toronto Police service on the Toronto Open Data Portal, the original dataset covers all crimes committed against the person, including those deemed unfounded post investigation. Updated annually, the entries are filtered by the reported year, and each year is associated with the following features : type of crime, age cohort of victim, gender, and counts of the same crime.
-Note that the dataset is not impervious to missing/incomplete data across several categories, and while any incomplete datapoint has been discounted, this causes serious implications for the analysis and is examined later.
-The original dataset features 1111 datapoints across 9 variables.
- Age_cohort is a defining feature of this dataset, and refers to one of 8 age bins that are as follows: ">12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+". Accordingly, efforts were made to attribute recognisable labels to these cohorts, but there was admittedly difficulty distinguishing between the middle aged adults that arguable spanned three of the 9 age cohorts. Therefore, the original identifiers were retained.
-## Data cleanup and processing 
+This section delves into the characteristics of note and outlines the process undertaken to create a ready-to-analyse dataset, including addressing missing values and standardizing variable names.
+
+## Data Overview 
+Published by the Toronto Police Service on the Toronto Open Data Portal, the  Toronto Police Annual Statistical Report on Crime Victims covers all crimes committed against the person, including those deemed unfounded post-investigation. The entries are filtered by the reported year, and each year is associated with the following features: type of crime, age cohort of victim, gender, and counts of the exact crime. The dataset was initiated in 2014 and is marked 'updated annually', but the latest recorded year available is 2022.
+
+With a focus on demographic insights, the dataset stands at 1111 data points across 9 variables. Age cohort is a defining feature of this dataset, and refers to one of 8 age bins that are as follows: ">12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+".Understandably, efforts were made to attribute recognizable labels to these cohorts, but there was admittedly difficulty distinguishing between the middle aged adults that arguably spanned three of the 9 age cohorts. Therefore, the original identifiers were retained.
+
+## Data Cleanup and Processing 
 R (R Core Team 2021) was the language and environment used for the bulk of this analysis, alongside the dplyr (Wickham et al. 2021),tidyverse (Wickham et al. 2019), janitor (Firke et al. 2021),  heatmap(cite). 
+To enhance analytical readiness, missing values were addressed, variable names are standardized and new summation columns created.
 
-I began with cleaning up the data after downloading it using the opendatatoronto package. Following are the steps involved in the primary cleanup stage: 
-Cleaning and standardising column names 
-Selecting relevant categories, these being report_year,subtype,sex, age_cohort,count
-Removing datapoints with unknown/missing data 
-Filtering to only female victims.
+### Missing Data Points 
+The dataset featured incomplete data points, which are discounted at this time by filtering and subsequent removal. Though making analysis remarkably easier, this poses a compromise regarding validity and poses significant implications for subsequent analyses, a concern explored in detail later. 
 
-Below are the first ten rows of the cleaned dataset, generated using the package kable.
+### Categorisation of Crimes 
+The dataset features 4 major crime types (Sexual Violation, Robbery, Assault, and Other). There is an additional data point labelled Assault subtype, providing subcategories only for this of the four major crime types. These subtypes include Assault/Aggravating Peace Officer, Bodily harm, and resist Arrest. The subtype column has been discounted after deliberation since it skews the dataset in terms of specificity.
+While the first three labels are forthright and succinct, Other is vague, and trying to find it’s intended definition proved a trickier task than expected. According to the glossary accompanying the Annual Police Statistical report, Other criminal code violations are defined as Non-traffic Criminal Code violations that are classified as neither violent nor property violations. The label Other is retained, but this definition proves useful to mention to viewers trying to gain an absolute understanding of the data.
+
+### Group-wise summation: The sumcount Variable
+Removing the crime subtype column leaves multiple different entries for the same age group, crime and year. For example, An assault could have been recorded in 2015 against a 65 + female, but it could have been a resisted arrest, or bodily harm. Summing up the crime counts per category removes duplicate entries with matching data (with the only differentiator being crime counts). A new variable, labelled sum count was initiated for this purpose, and added as a new column.
 
 ```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
+#| label: CLeaned data
+#| fig-cap: Cleaned data featuring the sum count variable
 #| echo: false
 #| warning: false
 #| message: false
 
-analysis_data <- 
-  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbyage.csv",
+finalcrimedata_data <- 
+  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/final_crimedata_toronto.csv",
            show_col_types = FALSE)
-head(analysis_data)
-
-```
+head(finalcrimedata_data) |>
+kable(
+    col.names = c("Report Year", "Crime Type", "Age Cohort", "Sum Count"),
+  align = "c",  # Center align all columns
+  booktabs = TRUE,
+)
+  ```
 
 # Visualisation
 
 ```{r, echo=FALSE, message=FALSE}
 ```
 ```{r}
+
 ```
 
 
 ## Changing crime trends in Toronto over the years 
 
+A dataset featuring years and counts inherently presents the initial statistical inquiry into the temporal dynamics and trends over the observed period. Naturally, this begs the question "How have the counts of different crimes varied over the years?".  To begin formulating an answer, one would envision a scatter plot with Years plotted against the number of crimes and 4 lines for each of the Crime types. 
+Using the 'group by' function in the dplyr package, data was grouped by the report year, and based on the type of crime. The 'summarise' function then added all counts for different age groups for the crime type per year, and the resulting table is shown below. 
+```{r}
+#| fig-cap: Group by crime
+#| echo: false
+#| warning: false
+#| message: false
+
+finalcrimedata_data <- 
+  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbycrime.csv",
+           show_col_types = FALSE)
+head(finalcrimedata_data) |>
+kable(
+    col.names = c("Report Year", "Crime Type", "Sum Count"),
+  align = "c",  # Center align all columns
+  booktabs = TRUE,
+)
+
+```
+```{r}
+#| label: scatterplot
+#| fig-cap: Changing crime trends over the years
+#| echo: false
+#| warning: false
+#| message: false
+
+groupbycrime_data <- 
+  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbycrime.csv",
+           show_col_types = FALSE)          
+groupbycrime_data |>
+  ggplot(aes(x = report_year, y = sum_count, color = subtype, type ="b")) +
+  geom_point() +
+  geom_line()+
+  theme_minimal() +
+  labs(x = "Year", y = "Crime Count", color = "Crime Type",type ="b") +
+  scale_color_brewer(palette = "Set1") +
+  ggtitle("Trends in crimes against females in Toronto")
+theme(legend.position = "right")
+
+```
+
+
 ### 
 ### Discussion
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
-
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
 
 We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
 
@@ -179,17 +222,42 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 
 @fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
 
+
 ```{r}
+#| label: heatmap
+#| fig-cap: Relationship between wing length and width
 #| echo: false
-#| eval: true
-#| message: false
 #| warning: false
-#| label: fig-stanareyouokay
-#| fig-cap: "Checking the convergence of the MCMC algorithm"
-#| fig-subcap: ["Trace plot", "Rhat plot"]
-#| layout-ncol: 2
+#| message: false
+
+groupbyage_data <- 
+  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbyage.csv",
+           show_col_types = FALSE)          
+#data_groupsbyage <- data_groupsbyage %>%
+#  arrange(factor(age_cohort, levels = custom_order))
+# Pivot the data to wide format for the heatmap
+heatmap_data <- groupbyage_data %>%
+  pivot_wider(names_from = report_year, values_from = sum_count, values_fill = 0)
+#str(heatmap_data)
+heatmap_matrix <- as.matrix(heatmap_data[1:nrow(heatmap_data), -1])
+
+#using package pretty heatmap
+pheatmap(heatmap_matrix,
+         display_numbers = T,
+         Colv = NA,
+         Rowv = NA,
+         show_rownames = T,
+         show_colnames = T,
+         xlab = "Year",
+         ylab = "Crime Type",
+         main = "Which female age group is most susceptible to crimes in Toronto?",
+         labels_row=c("<12","12 to 17","18 to 24","25 to 34","35 to 44","45 to 54","55 to 64","65+"),
+         cluster_cols = F,
+         cluster_rows = F,
+)
 
 ```
+
 
 
 
