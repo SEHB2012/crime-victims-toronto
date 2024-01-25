@@ -1,6 +1,6 @@
 ---
 title: "Are some women more susceptible to crime than others in Toronto?"
-subtitle: "A visualisation of crime rates over the years, and the ages they affect most"
+subtitle: "A visualization of crime rates over the years, and the ages they affect most"
 author: 
   - Sehar Bajwa
 thanks: "Code and data are available at: https://github.com/SEHB2012/crime-victims-toronto. A special thanks to my mom for fervently arguing that 45 -54 was just middle-aged, not middle-middle aged, and hence helping make the decision to retain age cohort labels"
@@ -68,7 +68,7 @@ Removing the crime subtype column leaves multiple different entries for the same
 #| message: false
 
 finalcrimedata_data <- 
-  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/final_crimedata_toronto.csv",
+  read_csv(file = "/cloud/project/inputs/data/final_crimedata_toronto.csv",
            show_col_types = FALSE)
 head(finalcrimedata_data) |>
 kable(
@@ -90,7 +90,7 @@ Using the 'group by' function in the dplyr package, data was grouped by the repo
 #| message: false
 
 finalcrimedata_data <- 
-  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbycrime.csv",
+  read_csv(file = "/cloud/project/inputs/data/data_groupsbycrime.csv",
            show_col_types = FALSE)
 head(finalcrimedata_data) |>
 kable(
@@ -108,7 +108,7 @@ kable(
 #| message: false
 
 groupbycrime_data <- 
-  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbycrime.csv",
+  read_csv(file = "/cloud/project/inputs/data/data_groupsbycrime.csv",
            show_col_types = FALSE)          
 groupbycrime_data |>
   ggplot(aes(x = report_year, y = sum_count, color = subtype, type ="b")) +
@@ -136,7 +136,7 @@ The second line of questioning begins with trying to understand which female age
 #| message: false
 
 finalage_data <- 
-  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbyage.csv",
+  read_csv(file = "/cloud/project/inputs/data/data_groupsbyage.csv",
            show_col_types = FALSE)
 head(finalage_data) |>
 kable(
@@ -176,7 +176,7 @@ The pheatmap package was installed and loaded(an appropriate abbreviation for wh
 #| message: false
 
 finalage_data <- 
-  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbyage.csv",
+  read_csv(file = "/cloud/project/inputs/data/data_groupsbyage.csv",
            show_col_types = FALSE)          
 #data_groupsbyage <- data_groupsbyage %>%
 #  arrange(factor(age_cohort, levels = custom_order))
