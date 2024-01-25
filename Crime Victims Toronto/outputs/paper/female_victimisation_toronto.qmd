@@ -1,0 +1,222 @@
+---
+title: "Are some women more susceptible to crime than others in Toronto?"
+subtitle: "A visualisation of crime rates over the years, and the ages they affect most"
+author: 
+  - Sehar Bajwa
+thanks: "Code and data are available at: https://github.com/SEHB2012/crime-victims-toronto. A special thanks to my mom for fervently arguing that 45 -54 was just middle-aged, not middle-middle aged, and hence helping make the decision to retain age cohort labels"
+date: today
+date-format: long
+abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+format: pdf
+number-sections: true
+toc: true
+bibliography: references.bib
+---
+
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+
+#install.packages("pheatmap")
+
+library(tidyverse)
+library(palmerpenguins)
+library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library("readr")
+library("pheatmap")
+
+```
+
+
+# Introduction {#sec-intro}
+
+Toronto is a scary city.As a women living alone, it helps to know with certainty on which birthday I may be attacked.
+
+
+# Data {#sec-data}
+This section delves into the characteristics of note and outlines the process undertaken to create a ready-to-analyse dataset, including addressing missing values and standardizing variable names.
+
+## Data Overview 
+Published by the Toronto Police Service on the Toronto Open Data Portal , the  Toronto Police Annual Statistical Report on Crime Victims[@victims_of_crime] covers all crimes committed against the person, including those deemed unfounded post-investigation. The entries are filtered by the reported year, and each year is associated with the following features: type of crime, age cohort of victim, gender, and counts of the exact crime. The dataset was initiated in 2014 and is marked 'updated annually', but the latest recorded year available is 2022.
+
+With a focus on demographic insights, the dataset stands at 1111 data points across 9 variables. Age cohort is a defining feature of this dataset, and refers to one of 8 age bins that are as follows: ">12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+".Understandably, efforts were made to attribute recognizable labels to these cohorts, but there was admittedly difficulty distinguishing between the middle aged adults that arguably spanned three of the 9 age cohorts. Therefore, the original identifiers were retained.
+
+## Data Cleanup and Processing 
+R [@citeR] was the language and environment used for the bulk of this analysis, alongside the dplyr (@dplRef),tidyverse[@tidyverseRef], janitor[@janitorRef],  pheatmap(cite). 
+To enhance analytical readiness, missing values were addressed, variable names are standardized and new summation columns created.
+
+### Missing Data Points 
+The dataset featured incomplete data points, which are discounted at this time by filtering and subsequent removal. Though making analysis remarkably easier, this poses a compromise regarding validity and poses significant implications for subsequent analyses, a concern explored in detail later. 
+
+### Categorisation of Crimes 
+The dataset features 4 major crime types (Sexual Violation, Robbery, Assault, and Other). There is an additional data point labelled Assault subtype, providing subcategories only for this of the four major crime types. These subtypes include Assault/Aggravating Peace Officer, Bodily harm, and resist Arrest. The subtype column has been discounted after deliberation since it skews the dataset in terms of specificity.
+While the first three labels are forthright and succinct, Other is vague, and trying to find it’s intended definition proved a trickier task than expected. According to the glossary accompanying the Annual Police Statistical report, Other criminal code violations are defined as Non-traffic Criminal Code violations that are classified as neither violent nor property violations. The label Other is retained, but this definition proves useful to mention to viewers trying to gain an absolute understanding of the data.
+
+### Group-wise summation: The sumcount Variable
+Removing the crime subtype column leaves multiple different entries for the same age group, crime and year. For example, An assault could have been recorded in 2015 against a 65 + female, but it could have been a resisted arrest, or bodily harm. Summing up the crime counts per category removes duplicate entries with matching data (with the only differentiator being crime counts). A new variable, labelled sum count was initiated for this purpose, and added as a new column.
+
+```{r}
+#| label: CLeaned data
+#| fig-cap: Cleaned data featuring the sum count variable
+#| echo: false
+#| warning: false
+#| message: false
+
+finalcrimedata_data <- 
+  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/final_crimedata_toronto.csv",
+           show_col_types = FALSE)
+head(finalcrimedata_data) |>
+kable(
+    col.names = c("Report Year", "Crime Type", "Age Cohort", "Sum Count"),
+  align = "c",  # Center align all columns
+  booktabs = TRUE,
+)
+```
+# Visualisation
+
+## Changing female victimisation rates in Toronto over the years 
+
+A dataset featuring years and counts inherently presents the initial statistical inquiry into the temporal dynamics and trends over the observed period. Naturally, this begs the question "How have the counts of different crimes varied over the years?".  To begin formulating an answer, one would envision a scatter plot with Years plotted against the number of crimes and 4 lines for each of the Crime types. 
+Using the 'group by' function in the dplyr package, data was grouped by the report year, and based on the type of crime. The 'summarise' function then added all counts for different age groups for the crime type per year, and the resulting table is shown below. 
+```{r}
+#| fig-cap: Group by crime
+#| echo: false
+#| warning: false
+#| message: false
+
+finalcrimedata_data <- 
+  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbycrime.csv",
+           show_col_types = FALSE)
+head(finalcrimedata_data) |>
+kable(
+    col.names = c("Report Year", "Crime Type", "Sum Count"),
+  align = "c",  # Center align all columns
+  booktabs = TRUE,
+)
+
+```
+```{r}
+#| label: scatterplot
+#| fig-cap: Changing crime trends over the years
+#| echo: false
+#| warning: false
+#| message: false
+
+groupbycrime_data <- 
+  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbycrime.csv",
+           show_col_types = FALSE)          
+groupbycrime_data |>
+  ggplot(aes(x = report_year, y = sum_count, color = subtype, type ="b")) +
+  geom_point() +
+  geom_line()+
+  theme_minimal() +
+  labs(x = "Year", y = "Crime Count", color = "Crime Type",type ="b") +
+  scale_color_brewer(palette = "Set1") +
+  ggtitle("Trends in Female Victimisation in Toronto")+
+  theme(legend.position = "right")
+
+```
+Immediate observations indicate alarmingly high levels for assault compared to other types of crime, and this could be attributed to assault being a summed group including different assault subtypes. 
+Assault has been growing steadily since 2014 and is at an all-time high in 2022, with a slight decline that can be attributed to Covid 19 restrictions imposed on the city in 2020.(cite)
+ Sexual Violation and 'Other' crime numbers were dented in 2020 and saw a resurgence in the year after, but Robbery decreased in 2021, the second year of the pandemic. A reasonable assumption could be that the first year had stricter stay-at-home policy implementations, resulting in families at home, making it significantly challenging for break-ins to go unnoticed, thus dissuading robbers from attempting them.
+This dataset has a relatively short, 9 year range, and is perhaps too narrow to predict with accuracy any lasting trends for the decades to follow, but it presents fascinating, magnified data of how a worldwide pandemic impacts the number reported Crime victims.
+
+## Rate of female victimisation for various age groups in Toronto
+The second line of questioning begins with trying to understand which female age groups are most at risk, and resolves the underlying personal motivation outlined before. Using group and summarise again, the data was grouped by report year and based on Age cohort, and summed as before, resulting in the following table.
+
+```{r}
+#| fig-cap: Group by crime
+#| echo: false
+#| warning: false
+#| message: false
+
+finalage_data <- 
+  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbyage.csv",
+           show_col_types = FALSE)
+head(finalage_data) |>
+kable(
+    col.names = c("Report Year", "Age Cohort", "Sum Count"),
+  align = "c",  # Center align all columns
+  booktabs = TRUE,
+)
+```
+Creating a heatmap was an inspired decision for this dataset, with the rationale being a visual that was inherently self-explanatory in how it represented trends and the relationships between the variables.
+The original dataset was transformed from its long format (1 observation per row, variables in different columns) to wide format (1 observation per row, all pertaining variables in that same row) by using the pivot_wider() function in the tidyr package. The pivoted data is presented below.
+```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-modelresults
+#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
+#| warning: false
+heatmap_data <- finalage_data %>%
+  pivot_wider(names_from = report_year, values_from = sum_count, values_fill = 0)
+kable(
+  heatmap_data,
+    col.names = c("Age Cohort", "2014", "2015","2016","2017","2018","2019","2020","2021","2022"),
+  align = "c",  # Center align all columns
+  booktabs = TRUE,
+)
+
+```
+
+The dataset also needs to be converted to a numeric matrix before the heatmap can be created, and this step utilised the as.matrix() function to coerce all data types to numbers.
+The pheatmap package was installed and loaded(an appropriate abbreviation for what was indeed a 'pretty heatmap') to generate a visually appealing and customisable chart that allowed for clustering and custom labels. 
+
+
+```{r fig.align='center'}
+#| label: heatmap
+#| fig-cap: Relationship between wing length and width
+#| echo: false
+#| warning: false
+#| message: false
+
+finalage_data <- 
+  read_csv(file = "/cloud/project/Crime Victims Toronto/inputs/data/data_groupsbyage.csv",
+           show_col_types = FALSE)          
+#data_groupsbyage <- data_groupsbyage %>%
+#  arrange(factor(age_cohort, levels = custom_order))
+# Pivot the data to wide format for the heatmap
+heatmap_data <- finalage_data %>%
+  pivot_wider(names_from = report_year, values_from = sum_count, values_fill = 0)
+#str(heatmap_data)
+heatmap_matrix <- as.matrix(heatmap_data[1:nrow(heatmap_data), -1])
+
+#using package pretty heatmap
+pheatmap(heatmap_matrix,
+         display_numbers = T,
+         Colv = NA,
+         Rowv = NA,
+         show_rownames = T,
+         show_colnames = T,
+         xlab = "Year",
+         ylab = "Crime Type",
+         main = "Which Female Age Group is most susceptible to Crimes in Toronto?",
+         labels_row=c("<12","12 to 17","18 to 24","25 to 34","35 to 44","45 to 54","55 to 64","65+"),
+         cluster_cols = F,
+         cluster_rows = F,
+         width = 10,
+         height = 20
+)
+
+```
+Immediately noticeable is that women from the ages of 25 to 34 have been most susceptible to crimes regardless of year, with an all-time high in 2022. The other end of the spectrum is that children have never been safer than they were during COVID-19, staying at home. 
+Moving vertically away from this high-risk group signals a reduced number of crime victims in both directions. This provides a possible inference that converging towards the transitional years that are 25 to 34 years of age, women are most in jeopardy, but is far from conclusive. 
+
+
+# Discussion
+
+
+## Limitations
+
+
+## Future Work
+
+\newpage
+
+
+# References
