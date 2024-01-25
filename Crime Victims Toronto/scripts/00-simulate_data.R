@@ -24,8 +24,8 @@ num_years <- 2022 - 2014 + 1
 
 simulate_groupbycrime <- tibble(
   report_year = rep(seq(2014, 2022), each = 4),
-  crime_type = rep(c("Assault", "Other", "Robbery", "Sexual Violation"), times = num_years),
-  crime_count = sample(1000:9000, num_years * 4, replace = TRUE) * 1.0  # Convert to numeric
+  subtype = rep(c("Assault", "Other", "Robbery", "Sexual Violation"), times = num_years),
+  sum_count = sample(1000:9000, num_years * 4, replace = TRUE) * 1.0  # Convert to numeric
 )
 
 #testing for unique crime names 
@@ -51,8 +51,8 @@ num_years <- 2022 - 2014 + 1
 
 simulate_groupbyage <- tibble(
   report_year = rep(seq(2014, 2022), each = 8),
-  crime_type = rep(c(">12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+"), times = num_years),
-  crime_count = sample(1000:9000, num_years * 8, replace = TRUE) * 1.0  # Convert to numeric
+  subtype = rep(c(">12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+"), times = num_years),
+  sum_count = sample(1000:9000, num_years * 8, replace = TRUE) * 1.0  # Convert to numeric
 )
 
 #testing for unique age groups,
