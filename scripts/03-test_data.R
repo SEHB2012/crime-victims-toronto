@@ -20,7 +20,7 @@ library(tidyverse)
 # Generate tests for first section : crimes are grouped by the type of crime
 groupbycrime_test <-
   read_csv(
-    file = "Crime Victims Toronto/inputs/data/data_groupsbycrime.csv",
+    file = "/cloud/project/outputs/data/data_groupsbycrime.csv",
     show_col_types = FALSE
   )
 
@@ -39,7 +39,7 @@ groupbycrime_test$sum_count |> class() == "numeric"
 # Generate tests for second section : crimes are grouped by the age cohort
 groupbyage_test <-
   read_csv(
-    file = "Crime Victims Toronto/inputs/data/data_groupsbyage.csv",
+    file = "/cloud/project/outputs/data/data_groupsbyage.csv",
     show_col_types = FALSE
   )
 
@@ -47,10 +47,11 @@ groupbyage_test <-
 #the years should have lower bound 2014, upper bound 2022
 #the crime should be a number 
 
-simulate_groupbycrime$subtype |>
+simulate_groupbyage$subtype |>
   unique() == c("Assault", "Other", "Robbery", "Sexual Violation")
+  
+groupbyage_test$report_year |> min() == 2014
+groupbyage_test$report_year |> max() == 2022
+groupbyage_test$sum_count |> min() >= 0
+groupbyage_test$sum_count |> class() == "numeric"
 
-groupbycrime_test$report_year |> min() == 2014
-groupbycrime_test$report_year |> max() == 2022
-groupbycrime_test$sum_count |> min() >= 0
-groupbycrime_test$sum_count |> class() == "numeric"

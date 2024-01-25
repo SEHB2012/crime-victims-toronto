@@ -24,5 +24,5 @@ raw_crimedata_toronto <- filter(datastore_resources, row_number()==1) %>% get_re
 #saving data locally
 write_csv(
   x = raw_crimedata_toronto,
-  file = "Crime Victims Toronto/inputs/data/raw_crimedata_toronto.csv"
+  file = "/cloud/project/inputs/data/raw_crimedata_toronto.csv"
 )

@@ -37,8 +37,8 @@ simulate_groupbycrime$crime_type |>
 
 simulate_groupbycrime$report_year |> min() == 2014
 simulate_groupbycrime$report_year |> max() == 2022
-simulate_groupbycrime$crime_count |> min() >= 0
-simulate_groupbycrime$crime_count |> class() == "numeric"
+simulate_groupbycrime$sum_count |> min() >= 0
+simulate_groupbycrime$sum_count |> class() == "numeric"
 
 # Generate simulated data for second section : crimes are grouped by the age group
 
@@ -64,8 +64,8 @@ simulate_groupbyage$crime_type |>
 
 simulate_groupbyage$report_year |> min() == 2014
 simulate_groupbyage$report_year |> max() == 2022
-simulate_groupbyage$crime_count |> min() >= 0
-simulate_groupbyage$crime_count |> class() == "numeric"
+simulate_groupbyage$sum_count |> min() >= 0
+simulate_groupbyage$sum_count |> class() == "numeric"
 
 
 

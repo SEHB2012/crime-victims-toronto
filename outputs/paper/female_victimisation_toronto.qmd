@@ -1,9 +1,9 @@
 ---
 title: "Are some women more susceptible to crime than others in Toronto?"
-subtitle: "A visualization of crime rates over the years, and the ages they affect most?"
+subtitle: "A visualization of crime rates over the years, and the ages they affect most."
 author: 
   - Sehar Bajwa
-thanks: "Code and data are available at: https://github.com/SEHB2012/crime-victims-toronto. A special thanks to my mom for fervently arguing that 45 -54 was just middle-aged, not middle-middle aged, and hence helping make the decision to retain age cohort labels"
+thanks: "Code and data are available at: https://github.com/SEHB2012/crime-victims-toronto. A special thanks to my mom for fervently arguing that 45 -54 was just middle-aged, not middle-middle aged, and hence helping make the decision to retain age cohort labels you will encounter later."
 date: today
 date-format: long
 abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
@@ -21,7 +21,6 @@ bibliography: references.bib
 #install.packages("pheatmap")
 
 library(tidyverse)
-library(palmerpenguins)
 library(tidyverse)
 library(dplyr)
 library(tidyr)
