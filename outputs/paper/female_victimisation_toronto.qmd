@@ -65,7 +65,7 @@ The dataset features 4 major crime types (Sexual Violation, Robbery, Assault, an
 While the first three labels are forthright and succinct, Other is vague, and trying to find it’s intended definition proved a trickier task than expected. According to the glossary accompanying the Annual Police Statistical report[@victims_of_crime], Other criminal code violations are defined as Non-traffic Criminal Code violations that are classified as neither violent nor property violations. The label Other is retained, but this definition proves useful to mention to viewers trying to gain an absolute understanding of the data.
 
 ### Duplicate entries
-Removing the crime subtype column leaves multiple different entries for the same age group, crime and year. For example, An assault could have been recorded in 2015 against a 65 + female, but it could have been a resisted arrest, or bodily harm. Summing up the crime counts per category removes duplicate entries with matching data (with the only differentiator being crime counts). A new variable, labelled sum count was initiated for this purpose, and added as a new column.
+Removing the crime subtype column leaves multiple different entries for the same age group, crime and year. For example, An assault could have been recorded in 2015 against a 65 + female, but it could have been a resisted arrest, or bodily harm. Summing up the crime counts per category removes duplicate entries with matching data (with the only differentiator being crime counts). A new variable, labelled sum count was initiated for this purpose, and added as a new column (see @fig-cleaneddata).
 
 ```{r}
 #| label: fig-cleaneddata
@@ -94,7 +94,7 @@ head(finalcrimedata_data) |>
 ## Trends In Female Victimization
 
 A dataset featuring years and counts inherently presents the initial statistical inquiry into the temporal dynamics and trends over the observed period. Naturally, this begs the question "How have the counts of different crimes varied over the years?".  To begin formulating an answer, one would envision a scatter plot with Years plotted against the number of crimes and 4 lines for each of the Crime types. 
-Using the `group by` function in the `dplyr` package, data was grouped by the report year, and based on the type of crime. The `summarise` function then added all counts for different age groups for the crime type per year, and the resulting table is shown below. 
+Using the `group by` function in the `dplyr` package, data was grouped by the report year, and based on the type of crime. The `summarise` function then added all counts for different age groups for the crime type per year (see @fig-groupcrime).
 
 ```{r}
 #| label: fig-groupcrime
@@ -149,7 +149,7 @@ Assault has been growing steadily since 2014 and is at an all-time high in 2022,
 This dataset has a relatively short, 9 year range, and is perhaps too narrow to predict with accuracy any lasting trends for the decades to follow, but it presents fascinating, magnified data of how a worldwide pandemic impacts the number reported Crime victims.
 
 ## At-risk Age Groups
-The second line of questioning begins with trying to understand which female age groups are most at risk, and resolves the underlying personal motivation outlined before. Using group and summarise again, the data was grouped by report year and based on Age cohort, and summed as before, resulting in the following table.
+The second line of questioning begins with trying to understand which female age groups are most at risk, and resolves the underlying personal motivation outlined before. Using group and summarise again, the data was grouped by report year and based on Age cohort, and summed as before (see @fig-groupage).
 
 ```{r}
 #| label: fig-groupage
