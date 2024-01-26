@@ -248,7 +248,7 @@ The presence of missing data points in the Age Group column poses a substantial 
 
 ### Uneven Bin Widths for Age groups
 
-Bin width sizes for the age cohorts were another noticeable issue. The range was lower for the adolescent (12 to 17) and young adult(18 to 24)  groups, being just 7 years. It was 10 years for all four of the middle-aged groups. As for the fringe ages that were unbounded, <12 and >65, there is no discrete way of making sure what ages within those ranges were accounted for. The absence of bin width standardisation would mean bar charts with ages on the horizontal axis had differing bar widths, and that resulting inferences would not be truly representative of the data.
+Bin width sizes for the age cohorts were another noticeable issue. The range was lower for the adolescent (12 to 17) and young adult(18 to 24)  groups, being just 7 years. It was 10 years for all four of the middle-aged groups. As for the fringe ages that were unbounded, <12 and >65, there is no discrete way of making sure what ages within those ranges were accounted for. The absence of bin width standardization would mean bar charts with ages on the horizontal axis had differing bar widths, and that resulting inferences would not be truly representative of the data.
 
 ### Unreported Crime cases
 
