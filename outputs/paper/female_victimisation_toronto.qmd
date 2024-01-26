@@ -6,7 +6,7 @@ author:
 thanks: "Code and data are available at: https://github.com/SEHB2012/crime-victims-toronto. A special thanks to my mom for fervently arguing that 45 -54 was just middle-aged, not middle-middle aged, and hence helping make the decision to retain age cohort labels you will encounter later."
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "Gender-based violence is a grave societal concern, inflicting profound physical, emotional, and psychological harm, and demanding urgent attention and robust intervention strategies. This study endeavours to examine annual trends in the incidence of crimes against females in Toronto, focusing on both age demographics and the nature of the offences. Leveraging data extracted from the Toronto Police Report on Victims of Crimes, the analysis reveals this paper establishes that assault victimization rates have never been higher and that females from ages 25 to 34 are most susceptible to crime.  This gender-specific research could serve as a critical foundation for policymakers, furnishing insights that can inform the development of targeted policies tailored to reduce the specific risks faced by females in the city."
 format: pdf
 number-sections: true
 toc: true
@@ -20,21 +20,28 @@ bibliography: references.bib
 
 #install.packages("pheatmap")
 
-library(tidyverse)
-library(tidyverse)
-library(dplyr)
-library(tidyr)
-library(knitr)
-library(kableExtra)
+library("tidyverse")
+library("dplyr")
+library("tidyr")
+library("knitr")
+library("kableExtra")
 library("readr")
 library("pheatmap")
+library("ggrepel")
 
 ```
 
 
 # Introduction {#sec-intro}
 
-Toronto is a scary city.As a women living alone, it helps to know with certainty on which birthday I may be attacked.
+
+Gender-based violence is perhaps the most widespread and socially tolerated of human rights violations. (cite)
+In Toronto and elsewhere worldwide, violence against women impedes women's equality, rights and fundamental freedom. Examining this crisis through analysis like this study supports policymakers in developing and evaluating measures to prevent and eliminate violence against women, and increase public awareness of the nature and extent of violence against women. On a more personal level, the motivation behind this research stems from my own position as a young woman living alone in this city. I wanted to explore how safe Toronto is and how victimization rates have altered, and also how my age impacted my vulnerability.
+The Victims of Crime Report published by the Toronto Police in the years 2014 through 2022 provides data on the gender and ages of victims subjected to Sexual Violence, Robberies, Assaults and other violations in the City of Toronto. However, the focus of this investigation is to examine only the female victim statistics, and the rationale behind this decision lies in the undeniable differences between male and female victimization. 
+Previous research has consistently revealed that violence against women differs in significant ways from violence against men, such as the types of offences(Johnson 2006), the severity of the crime(vaillancourt), and the consequence of victimization(vaillantcourt). Infact, in Canada in 2019, females(106 victims per 1000 women) were violently victimized at a rate nearly double that of males(59 victims per 1000 men).(cite) 
+
+The findings of this study support the gravity of gender-based violence: it was discovered that Assault is at an all time high, and that the reduced numbers in crimes that the Covid-19 pandemic brought have regained their pre-2019 trends. Also consistent with other papers that attribute age as a predictor of victimization (cite risk factors paper), this study found that young women between the ages of 25 to 34 are most susceptible to crime.
+To study Female victimization in Toronto with reference to the ages of the victims and the offences they are subjected to, this paper is organised into the following sections: Data, Visualization, Discussion and References. In the data section, I provide a synopsis of the dataset and the variables of interest. Also included here is a quick review of the data processing, the subtypes of offences analysed, and the creation of a new Summation variable. The visualization section examines two lines of questioning, the first being: "How have female victimization rates varied over the years?", and the second being: "Are there some age groups that are more susceptible to crime than others?". Each of these sections features relevant tables, graphs and observations. Lastly, the Discussion section is a high-level overview of the limitations of the analysis, and concluding remarks featuring the next steps for future iterations of this study.
 
 
 # Data {#sec-data}
@@ -43,47 +50,61 @@ This section delves into the characteristics of note and outlines the process un
 ## Data Overview 
 Published by the Toronto Police Service on the Toronto Open Data Portal , the  Toronto Police Annual Statistical Report on Crime Victims[@victims_of_crime] covers all crimes committed against the person, including those deemed unfounded post-investigation. The entries are filtered by the reported year, and each year is associated with the following features: type of crime, age cohort of victim, gender, and counts of the exact crime. The dataset was initiated in 2014 and is marked 'updated annually', but the latest recorded year available is 2022.
 
-With a focus on demographic insights, the dataset stands at 1111 data points across 9 variables. Age cohort is a defining feature of this dataset, and refers to one of 8 age bins that are as follows: ">12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+".Understandably, efforts were made to attribute recognizable labels to these cohorts, but there was admittedly difficulty distinguishing between the middle aged adults that arguably spanned three of the 9 age cohorts. Therefore, the original identifiers were retained.
+With a focus on demographic insights, the dataset stands at 1111 data points across 9 variables. Age cohort is a defining feature of this dataset, and refers to one of 8 age bins that are as follows: "<12", "12 to 17", "18 to 24", "25 to 34","35 to 44","45 to 54","55 to 64","65+".Efforts were made to attribute recognizable labels to these cohorts, but there was admittedly difficulty distinguishing between the middle aged adults that arguably spanned three of the 9 age cohorts. Therefore, the original identifiers were retained.
 
 ## Data Cleanup and Processing 
-R [@citeR] was the language and environment used for the bulk of this analysis, alongside the dplyr (@dplRef),tidyverse[@tidyverseRef], janitor[@janitorRef],  pheatmap(cite). 
+R [@citeR] was the language and environment used for the bulk of this analysis, alongside the dplyr (@dplRef),tidyverse[@tidyverseRef], janitor[@janitorRef], knitr and readr packages. The following formatting packages were used for the tables, scatter plot and heatmap: kable, ggrepel, and pheatmap.
 To enhance analytical readiness, missing values were addressed, variable names are standardized and new summation columns created.
+
+library("tidyverse")
+library("dplyr")
+library("tidyr")
+library("knitr")
+library("kableExtra")
+library("readr")
+library("pheatmap")
+library("ggrepel")
 
 ### Missing Data Points 
 The dataset featured incomplete data points, which are discounted at this time by filtering and subsequent removal. Though making analysis remarkably easier, this poses a compromise regarding validity and poses significant implications for subsequent analyses, a concern explored in detail later. 
 
-### Categorisation of Crimes 
+### Categorization of Crimes 
 The dataset features 4 major crime types (Sexual Violation, Robbery, Assault, and Other). There is an additional data point labelled Assault subtype, providing subcategories only for this of the four major crime types. These subtypes include Assault/Aggravating Peace Officer, Bodily harm, and resist Arrest. The subtype column has been discounted after deliberation since it skews the dataset in terms of specificity.
 While the first three labels are forthright and succinct, Other is vague, and trying to find it’s intended definition proved a trickier task than expected. According to the glossary accompanying the Annual Police Statistical report, Other criminal code violations are defined as Non-traffic Criminal Code violations that are classified as neither violent nor property violations. The label Other is retained, but this definition proves useful to mention to viewers trying to gain an absolute understanding of the data.
 
-### Group-wise summation: The sumcount Variable
+### Duplicate entries
 Removing the crime subtype column leaves multiple different entries for the same age group, crime and year. For example, An assault could have been recorded in 2015 against a 65 + female, but it could have been a resisted arrest, or bodily harm. Summing up the crime counts per category removes duplicate entries with matching data (with the only differentiator being crime counts). A new variable, labelled sum count was initiated for this purpose, and added as a new column.
 
 ```{r}
-#| label: CLeaned data
-#| fig-cap: Cleaned data featuring the sum count variable
+#| label: tbl-cLeaneddata
+#| tbl-cap: "Cleaned data featuring the sum count variable"
 #| echo: false
 #| warning: false
 #| message: false
+#|  header-includes: - \usepackage{float}
+#|  - \floatplacement{table}{H}
 
-finalcrimedata_data <- 
+finalcrimedata_data <-
   read_csv(file = "/cloud/project/outputs/data/final_crimedata_toronto.csv",
            show_col_types = FALSE)
-head(finalcrimedata_data) |>
-kable(
-    col.names = c("Report Year", "Crime Type", "Age Cohort", "Sum Count"),
-  align = "c",  # Center align all columns
-  booktabs = TRUE,
-)
-```
-# Visualisation
 
-## Changing female victimisation rates in Toronto over the years 
+head(finalcrimedata_data) |>
+  kable(
+    col.names = c("Report Year", "Crime Type", "Age Cohort", "Sum Count"),
+    booktabs = TRUE,
+  )
+```
+
+# Visualization {#sec-vsualization}
+
+## Changing female victimization rates in Toronto over the years 
 
 A dataset featuring years and counts inherently presents the initial statistical inquiry into the temporal dynamics and trends over the observed period. Naturally, this begs the question "How have the counts of different crimes varied over the years?".  To begin formulating an answer, one would envision a scatter plot with Years plotted against the number of crimes and 4 lines for each of the Crime types. 
 Using the 'group by' function in the dplyr package, data was grouped by the report year, and based on the type of crime. The 'summarise' function then added all counts for different age groups for the crime type per year, and the resulting table is shown below. 
+
 ```{r}
-#| fig-cap: Group by crime
+#| label: tbl-groupbycrime
+#| tbl-cap: "EXAMPLE"
 #| echo: false
 #| warning: false
 #| message: false
@@ -99,9 +120,10 @@ kable(
 )
 
 ```
+Figure x is a scatterplot that visually represents the data on how victimization rates have increased over the years.
 ```{r}
-#| label: scatterplot
-#| fig-cap: Changing crime trends over the years
+#| label: fig-scatterplot
+#| fig-cap: "Changing crime trends over the years"
 #| echo: false
 #| warning: false
 #| message: false
@@ -113,6 +135,8 @@ groupbycrime_data |>
   ggplot(aes(x = report_year, y = sum_count, color = subtype, type ="b")) +
   geom_point() +
   geom_line()+
+  #geom_text(aes(label = sum_count), vjust = 1.5, hjust = 0.5, size = 3) +
+  geom_text_repel(aes(label = sum_count), box.padding = 0.5, force = 0.5, size = 2.5) +
   theme_minimal() +
   labs(x = "Year", y = "Crime Count", color = "Crime Type",type ="b") +
   scale_color_brewer(palette = "Set1") +
@@ -145,8 +169,11 @@ kable(
 )
 ```
 Creating a heatmap was an inspired decision for this dataset, with the rationale being a visual that was inherently self-explanatory in how it represented trends and the relationships between the variables.
-The original dataset was transformed from its long format (1 observation per row, variables in different columns) to wide format (1 observation per row, all pertaining variables in that same row) by using the pivot_wider() function in the tidyr package. The pivoted data is presented below.
-```{r}
+The original dataset was transformed from its long format (1 observation per row, variables in different columns) to wide format (1 observation per row, all pertaining variables in that same row) by using the pivot_wider() function in the tidyr package. 
+The dataset also needs to be converted to a numeric matrix before the heatmap can be created, and this step utilised the as.matrix() function to coerce all data types to numbers.
+The pheatmap package (an appropriate abbreviation for what was indeed a 'pretty heatmap') generated a visually appealing and customisable chart that allowed for clustering and custom labels. (see figure blah blah)
+
+```{r fig.align='center'}
 #| echo: false
 #| eval: true
 #| label: tbl-modelresults
@@ -163,13 +190,13 @@ kable(
 
 ```
 
-The dataset also needs to be converted to a numeric matrix before the heatmap can be created, and this step utilised the as.matrix() function to coerce all data types to numbers.
-The pheatmap package was installed and loaded(an appropriate abbreviation for what was indeed a 'pretty heatmap') to generate a visually appealing and customisable chart that allowed for clustering and custom labels. 
+
+
 
 
 ```{r fig.align='center'}
-#| label: heatmap
-#| fig-cap: Relationship between wing length and width
+#| label: fig-heatmap
+#| fig-cap: "Figure 3: Heatmap showing trends"
 #| echo: false
 #| warning: false
 #| message: false
@@ -194,12 +221,12 @@ pheatmap(heatmap_matrix,
          show_colnames = T,
          xlab = "Year",
          ylab = "Crime Type",
-         main = "Which Female Age Group is most susceptible to Crimes in Toronto?",
+         main = "Crime Rate Victimzation by age groups",
          labels_row=c("<12","12 to 17","18 to 24","25 to 34","35 to 44","45 to 54","55 to 64","65+"),
          cluster_cols = F,
          cluster_rows = F,
          width = 10,
-         height = 20
+         height = 20,
 )
 
 ```
@@ -207,15 +234,27 @@ Immediately noticeable is that women from the ages of 25 to 34 have been most su
 Moving vertically away from this high-risk group signals a reduced number of crime victims in both directions. This provides a possible inference that converging towards the transitional years that are 25 to 34 years of age, women are most in jeopardy, but is far from conclusive. 
 
 
-# Discussion
+# Discussion {#sec-discussion}
 
 
 ## Limitations
 
+### Missing Data
 
-## Future Work
+The presence of missing data points in the Age Group column poses a substantial limitation to the analysis's robustness, and so were disregarded in this study. These gaps in the data can lead to biased analyses, as the omitted information may disproportionately affect certain age groups. Consequently, the findings may lack generalizability, inhibiting the ability to draw comprehensive and reliable conclusions regarding trends and risk groups. This could be addressed by obtaining additional, completed data to take the disregarded entries back into account. 
 
+### Uneven Bin Widths for Age groups
+
+Bin width sizes for the age cohorts were another noticeable issue. The range was lower for the adolescent (12 to 17) and young adult(18 to 24)  groups, being just 7 years. It was 10 years for all four of the middle-aged groups. As for the fringe ages that were unbounded, <12 and >65, there is no discrete way of making sure what ages within those ranges were accounted for. The absence of bin width standardisation would mean bar charts with ages on the horizontal axis had differing bar widths, and that resulting inferences would not be truly representative of the data.
+
+### Unreported Crime cases
+
+Lastly, one must note that this dataset only considers victims who have come forward to the Toronto Police to file official complaints, not the actual number of crimes committed in the city. The General Social Survey conducted by Statistics Canada enables self-reporting of crime through a series of independent, annual, voluntary, cross-sectional surveys. According to the Victimization cycle of the GSS conducted in 2009, 69% of violent victimizations and 71% of robberies are not reported to the police. This means that this Victims of Crime dataset published by the Toronto Police only reflects a fraction of the crimes committed. It is also prudent to mention that the GSS has the limitation of reliance upon respondents for accurately recalling and reporting the events, but in conjunction with the Annual Statistical report, could provide a more authentic count of the crimes in Toronto.
+As an aside, the GSS confers with the results of this study posits that being young remains a strong predictor of victimization against women, and that younger females are more vulnerable to violent crime. (cite)
+
+## Next steps
+This study provides a robust starting point for analysing female victimization in Toronto, and there are several apparent improvements that can be made and considered for future iterations. In addition to resolving the limitations above through complete data, collection socio-demographic information about these victims will provide additional frames for analysis. It would also be a worthwhile investigation to compare this report with the Major Crime Indicators report, and hone in on which neighbourhoods are more at risk, and the months/times of day that record the highest criminal activity in the city. 
 \newpage
 
 
-# References
+# References {#sec-references}
