@@ -1,6 +1,9 @@
 # Overview
 
-This paper analyses the rate of female crime victimization in the City of Toronto across several years, types of crime and age groups
+Using data from OpenData Toronto and the Annual Toronto Police Victims of Safety report, this paper analyses female victimization rates across different age groups and types of crimes. The subsequent analysis establishes that assault victimization rates have never been higher and that females from ages 25 to 34 are most susceptible to crime. This gender-specific research offers policymakers valuable insights to craft targeted policies, aiming to mitigate the specific risks faced by females in the city and reduce Gender Violence overall.
+
+
+
 # LLM Usage
 
 **LLM Usage: Segments of R code were written, debugged and improved with the assistance of Large Language Models, specifically ChatGPT 3.5. Chat history is included in the following file:
