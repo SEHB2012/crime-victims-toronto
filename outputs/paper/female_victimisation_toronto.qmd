@@ -76,13 +76,15 @@ While the first three labels are forthright and succinct, Other is vague, and tr
 Removing the crime subtype column leaves multiple different entries for the same age group, crime and year. For example, An assault could have been recorded in 2015 against a 65 + female, but it could have been a resisted arrest, or bodily harm. Summing up the crime counts per category removes duplicate entries with matching data (with the only differentiator being crime counts). A new variable, labelled sum count was initiated for this purpose, and added as a new column.
 
 ```{r}
-#| label: tbl-cLeaneddata
-#| tbl-cap: "Cleaned data featuring the sum count variable"
+#| label: fig-cleaneddata
+#| fig-cap: "First 10 entries after the data has been cleaned and summed so that there is a singular entry for every crime per age group"
 #| echo: false
 #| warning: false
 #| message: false
-#|  header-includes: - \usepackage{float}
-#|  - \floatplacement{table}{H}
+#| fig_position: 'b'
+
+#Using fig cap instead of tbl since it override the default position of table at the top. tbl-position does not work in the same way that fig cap does
+
 
 finalcrimedata_data <-
   read_csv(file = "/cloud/project/outputs/data/final_crimedata_toronto.csv",
@@ -103,11 +105,12 @@ A dataset featuring years and counts inherently presents the initial statistical
 Using the 'group by' function in the dplyr package, data was grouped by the report year, and based on the type of crime. The 'summarise' function then added all counts for different age groups for the crime type per year, and the resulting table is shown below. 
 
 ```{r}
-#| label: tbl-groupbycrime
-#| tbl-cap: "EXAMPLE"
+#| label: fig-groupcrime
+#| fig-cap: "First 10 entries after the data has been manipulated to create one datapoint per every year  for every type of crime."
 #| echo: false
 #| warning: false
 #| message: false
+#| fig_position: 'b'
 
 finalcrimedata_data <- 
   read_csv(file = "/cloud/project/outputs/data/data_groupsbycrime.csv",
@@ -123,7 +126,7 @@ kable(
 Figure x is a scatterplot that visually represents the data on how victimization rates have increased over the years.
 ```{r}
 #| label: fig-scatterplot
-#| fig-cap: "Changing crime trends over the years"
+#| fig-cap: "Scatterplot featuring the changing trends in the types of crime over the years"
 #| echo: false
 #| warning: false
 #| message: false
@@ -140,7 +143,7 @@ groupbycrime_data |>
   theme_minimal() +
   labs(x = "Year", y = "Crime Count", color = "Crime Type",type ="b") +
   scale_color_brewer(palette = "Set1") +
-  ggtitle("Trends in Female Victimisation in Toronto")+
+  #ggtitle("Trends in Female Victimisation in Toronto")+
   theme(legend.position = "right")
 
 ```
@@ -153,10 +156,12 @@ This dataset has a relatively short, 9 year range, and is perhaps too narrow to 
 The second line of questioning begins with trying to understand which female age groups are most at risk, and resolves the underlying personal motivation outlined before. Using group and summarise again, the data was grouped by report year and based on Age cohort, and summed as before, resulting in the following table.
 
 ```{r}
-#| fig-cap: Group by crime
+#| label: fig-groupage
+#| fig-cap: "First 10 entries after the data has been manipulated to sum all crime counts that happen to every age group every year."
 #| echo: false
 #| warning: false
 #| message: false
+#| fig_position: 'b'
 
 finalage_data <- 
   read_csv(file = "/cloud/project/outputs/data/data_groupsbyage.csv",
@@ -174,11 +179,13 @@ The dataset also needs to be converted to a numeric matrix before the heatmap ca
 The pheatmap package (an appropriate abbreviation for what was indeed a 'pretty heatmap') generated a visually appealing and customisable chart that allowed for clustering and custom labels. (see figure blah blah)
 
 ```{r fig.align='center'}
+#| label: fig-groupagewide
+#| fig-cap: "Pivoted data table showing crime trends in a wide format so that a heatmap can be created."
 #| echo: false
-#| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
 #| warning: false
+#| message: false
+#| fig_position: 'b'
+
 heatmap_data <- finalage_data %>%
   pivot_wider(names_from = report_year, values_from = sum_count, values_fill = 0)
 kable(
@@ -196,7 +203,7 @@ kable(
 
 ```{r fig.align='center'}
 #| label: fig-heatmap
-#| fig-cap: "Figure 3: Heatmap showing trends"
+#| fig-cap: "Heatmap using color intensity to visually depict the number of crimes."
 #| echo: false
 #| warning: false
 #| message: false
